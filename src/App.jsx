@@ -1,14 +1,8 @@
 import './App.css'
-import Rock from "./assets/Rock.jpg"
-import Paper from "./assets/paper.jpg"
-import Scissor from "./assets/Scissor.jpg"
 import ChoiceBox from './components/ChoiceBox'
 import Button from "./components/Button"
 import { useState } from 'react'
 
-import MoveAudio from "./assets/move.mp3";
-import LoseAudio from "./assets/Lose.wav";
-import WinAudio from "./assets/win.wav";
 
 
 
@@ -22,8 +16,7 @@ function App() {
   function handleClick(string){
     // console.log(string);
     // console.log("Inside Handle Click");
-    let playSound=new Audio(MoveAudio);
-    playSound.play();
+    
     let comp=Math.floor(Math.random()*3);
     // console.log(comp,choiceArr[comp]);
     setcmpChoice(choiceArr[comp]);
@@ -44,14 +37,11 @@ function App() {
       return;
     }
     if((userChoice==="Rock" && cmpChoice==="Paper")||(userChoice==="Paper" && cmpChoice==="Scissor")||(userChoice==="Scissor" && cmpChoice==="Rock")){
-      let playSound=new Audio(LoseAudio);
-      playSound.play();
+
       let newScore=userScore+1;
       setcmpScore(newScore);
       console.log("Computer won")
     }else{
-      let playSound=new Audio(WinAudio);
-      playSound.play();
       let newScore=userScore+1;
       setuserScore(newScore);
       console.log("user won");
