@@ -1,100 +1,104 @@
-import './App.css'
-import ChoiceBox from './components/ChoiceBox'
-import Button from "./components/Button"
-import { useState } from 'react'
-
-
-
+import './App.css';
+import ChoiceBox from './components/ChoiceBox';
+import Button from './components/Button';
+import { useState } from 'react';
+import { Axios } from 'axios';
 
 function App() {
-  let [cmpChoice,setcmpChoice]=useState("Rock");
-  let [userChoice,setuserChoice]=useState("Rock");
-  let choiceArr=["Rock","Paper","Scissor"];
-  let [userScore,setuserScore]=useState(0);
-  let [cmpScore,setcmpScore]=useState(0);
-  
-  function handleClick(string){
-    // console.log(string);
-    // console.log("Inside Handle Click");
-    
-    let comp=Math.floor(Math.random()*3);
-    // console.log(comp,choiceArr[comp]);
+  const [cmpChoice, setcmpChoice] = useState('');
+  const [userChoice, setuserChoice] = useState('');
+  const choiceArr = ['Rock', 'Paper', 'Scissor'];
+  const [userScore, setuserScore] = useState(0);
+  const [cmpScore, setcmpScore] = useState(0);
+
+  async function sendGameResultToBackend() {
+    try {
+      const response = Axios.post('http://localhost:5000/api/game', {
+       
+        data: JSON.stringify({ userChoice, cmpChoice }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Game result sent successfully:', data);
+      } else {
+        console.error('Failed to send game result');
+      }
+    } catch (error) {
+      console.error('Error sending game result:', error);
+    }
+  }
+
+  function handleClick(string) {
+    const comp = Math.floor(Math.random() * 3);
     setcmpChoice(choiceArr[comp]);
 
-    for(let i in choiceArr){
-      if(choiceArr[i]===string){
+    for (const i in choiceArr) {
+      if (choiceArr[i] === string) {
         setuserChoice(choiceArr[i]);
       }
     }
 
-    CheckWin(userChoice,cmpChoice);
-
-    // console.log(userChoice,cmpChoice);
+    CheckWin(userChoice, cmpChoice);
+    sendGameResultToBackend();
   }
-  function CheckWin(userChoice,cmpChoice){
-    if(userChoice===cmpChoice){
-      console.log("Equal choices");
+
+  function CheckWin(userChoice, cmpChoice) {
+    console.log(userChoice, cmpChoice);
+    if (userChoice === cmpChoice) {
+      console.log('Equal choices');
       return;
     }
-    if((userChoice==="Rock" && cmpChoice==="Paper")||(userChoice==="Paper" && cmpChoice==="Scissor")||(userChoice==="Scissor" && cmpChoice==="Rock")){
-
-      let newScore=userScore+1;
+    if (
+      (userChoice === 'Rock' && cmpChoice === 'Paper') ||
+      (userChoice === 'Paper' && cmpChoice === 'Scissor') ||
+      (userChoice === 'Scissor' && cmpChoice === 'Rock')
+    ) {
+      const newScore = userScore + 1;
       setcmpScore(newScore);
-      console.log("Computer won")
-    }else{
-      let newScore=userScore+1;
+      console.log('Computer won');
+    } else {
+      const newScore = userScore + 1;
       setuserScore(newScore);
-      console.log("user won");
+      console.log('User won');
     }
-    
-
   }
 
-  function Reset(){
-    console.log(userChoice,cmpChoice);
+  function Reset() {
     setcmpScore(0);
     setuserScore(0);
-    
-    setcmpChoice("");
-    setuserChoice("");
-    console.log(userChoice,cmpChoice);
+    setcmpChoice('');
+    setuserChoice('');
   }
-return (
 
+  return (
     <>
-    <div className="body">
-    <div className="compScore score">
-      Computer's Score :{cmpScore}
-    </div>
-    <div className="usersScore score">
-      Your Score :{userScore}
-    </div>
-    <button className=" resetbtn " onClick={Reset}>Reset</button>
+      <div className="body">
+        <div className="compScore score">Computer's Score: {cmpScore}</div>
+        <div className="usersScore score">Your Score: {userScore}</div>
+        <button className="resetbtn" onClick={Reset}>
+          Reset
+        </button>
 
-    <div className="playContainer">
+        <div className="playContainer">
+          <div className="box1">
+            {/* Computer's choice box */}
+            <ChoiceBox choice={cmpChoice} />
+            {/* User's Choice box */}
+            <ChoiceBox choice={userChoice} />
+          </div>
 
-    <div className="box1">
-    {/* computer's choice box */}
-    <ChoiceBox choice={cmpChoice}/>
-    {/* user's Choice box */}
-    <ChoiceBox choice={userChoice}/>
-    </div>
+          <div className="computerChoice">Computer's Choice is: {cmpChoice}</div>
 
-    <div className="computerChoice">
-      Computer's Choice is:{cmpChoice}
-    </div>
-
-
-    <div className="buttonContainer">
-    <Button type="Rock"  handleClick={handleClick}/>
-    <Button type="Paper" handleClick={handleClick}/>
-    <Button type="Scissor" handleClick={handleClick}/>
-    </div>
-    </div>
-
-    </div>
+          <div className="buttonContainer">
+            <Button type="Rock" handleClick={handleClick} />
+            <Button type="Paper" handleClick={handleClick} />
+            <Button type="Scissor" handleClick={handleClick} />
+          </div>
+        </div>
+      </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
